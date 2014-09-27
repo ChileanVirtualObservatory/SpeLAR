@@ -85,14 +85,15 @@ def apriori_gen(frequent_itemsets, k):
     return ret_list
 
 def apriori(dataset, min_support=0.5):
-    """ 
+    """
     Args:
         dataset (iterable (iterable)): a dataset of transactions
         min_support: minimum support of itemsets to generate
 
     Returns:
         frequent_itemsets: a set of the itemsets with support over minimum
-        support_data: dictionary with number of times each item is present in dataset
+        support_data: dictionary with the number of times each item is present
+            in the dataset
     """
     this_one_itemsets = one_item_sets(dataset)
     this_dataset = map(set, dataset)
@@ -124,12 +125,13 @@ def calc_confidence(frequent_set, itemset_list, support_data, brl, min_conf):
         frequent_set: a frequent set from which to generate the rules
         itemset_list: a list of itemsets from which to generate the consecuent
             of the rules
-        support_data: dictionary with number of times each item is present in dataset
+        support_data: dictionary with the number of times each item is present
+            in the dataset
         brl: a list to which the generated rules will be appended
         min_conf: minimum confidence the generated rules must meet
 
     Returns:
-        pruned_item_list: a list of possible rule generating items to be 
+        pruned_item_list: a list of possible rule generating items to be
             mined still
     """
     pruned_item_list = []
@@ -140,13 +142,21 @@ def calc_confidence(frequent_set, itemset_list, support_data, brl, min_conf):
             pruned_item_list.append(conseq)
     return pruned_item_list
 
-def rules_from_consequent(frequent_set, itemset_list, support_data, brl, min_conf):
-    """Generates association rules recursively using a frequent itemset as consecuent
+def rules_from_consequent(
+    frequent_set,
+    itemset_list,
+    support_data,
+    brl,
+    min_conf):
+    """Generates association rules recursively using a frequent itemset
+    as consecuent.
 
     Args:
         frequent_set: a frequent itemset
-        itemset_list: a list of items that could be on the consecuent of the rule
-        support_data: dictionary with number of times each item is present in dataset
+        itemset_list: a list of items that could be on the consecuent of
+            the rule
+        support_data: dictionary with the number of times each frequent
+            itemset is present in the dataset
         brl: a list to which the generated rules will be appended
         min_conf: minimum confidence the generated rules must meet
     """
@@ -176,8 +186,8 @@ def generate_rules(frequent_itemsets, support_data, min_conf=0.7):
 
     Args:
         frequent_itemsets: a set of frequent itemsets
-        support_data: dictionary with number of times each item is present 
-            in the dataset
+        support_data: dictionary with the number of times each frequent
+            itemset is present in the dataset
         min_conf: minimum confidence the generated rules must meet
     """
     big_rule_list = []
@@ -213,7 +223,7 @@ def run(dataset):
 
     Returns:
         frequent_itemsets: a set of frequent itemsets found
-        support_data: dictionary with the number of times each frequent 
+        support_data: dictionary with the number of times each frequent
             itemset is present in the dataset
         rules: a set of association rules mined from the dataset
     """
