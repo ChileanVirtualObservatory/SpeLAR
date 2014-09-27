@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+
+"""
+Spelar Module
+
+This module contains scripts that receive the commands and options from the user in order to run the Asociation Rule Analysis of spectral line in the given spectral line data source.
+
+Example: 
+	
+	$ python spelar.py test.csv
+"""
+
 import argparse
 import apriori
 import fpgrowth
