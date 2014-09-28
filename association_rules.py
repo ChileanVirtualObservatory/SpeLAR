@@ -1,25 +1,31 @@
 from tools import apriori_gen
-from fpgrowth import get_support
+#from fpgrowth import get_support
 
 class RuleMiner(object):
     """A class for mining asociation rules using Apriori algorithm
     """
-    def __init__(self, frequent_itemsets, support_data_struct, min_conf=0.7):
+    def __init__(self, frequent_itemsets, support_data_struct, min_conf):
         super(RuleMiner, self).__init__()
         self.frequent_itemsets = frequent_itemsets
         self.support_data_struct = support_data_struct
         self.min_conf = min_conf
 
+    def get_confidence(self, antecedent, consequent):
+        return self.support_data_struct[antecedent]/self.support_data_struct[antecedent - consequent]
+
     def calc_confidence(self, frequent_set, itemset_list, brl):
         pruned_item_list = []
         num_items = 4
         for conseq in itemset_list:
+            """
             if (type(self.support_data_struct.values()[0]) is float):
                 conf = self.support_data_struct[frequent_set]/self.support_data_struct[frequent_set - conseq]
             else:
                 support_a = get_support(frequent_set, self.support_data_struct, num_items)
                 support_b = get_support(frequent_set - conseq, self.support_data_struct, num_items)
                 conf = support_a/support_b
+            """
+            conf = self.get_confidence(frequent_set, conseq)
             if conf >= self.min_conf:
                 brl.append((frequent_set - conseq, conseq, conf))
                 pruned_item_list.append(conseq)
@@ -55,7 +61,9 @@ class RuleMiner(object):
                     self.rules_from_consequent(frequent_itemset, item_list_1, big_rule_list)
         return big_rule_list
 
+"""
 def generate_rules(frequent_itemsets, support_data_struct, min_conf=0.7):
 
     this_miner = RuleMiner(frequent_itemsets, support_data_struct, min_conf)
     return this_miner.generate()    
+"""

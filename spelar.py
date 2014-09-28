@@ -30,14 +30,12 @@ def main():
 
     spectra = parse_csv(in_file)
 
-    ap_itemsets, support_data = apriori.run(spectra)
-    ap_rules = association_rules.generate_rules(ap_itemsets, support_data)
+    ap_itemsets, ap_rules = apriori.run(spectra)
 
     print "apriori_items:\n%s\n" % ap_itemsets
     print "apriori_rules:\n%s\n" % ap_rules
 
-    fp_itemsets, fp_header_tab = fpgrowth.run(spectra)
-    fp_rules = association_rules.generate_rules(fp_itemsets, fp_header_tab)
+    fp_itemsets, fp_rules = fpgrowth.run(spectra)
 
     print "fp_items:\n%s\n" % fp_itemsets
     print "fp_rules:\n%s\n" % fp_rules

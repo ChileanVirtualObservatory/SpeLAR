@@ -10,7 +10,7 @@ Example:
 """
 
 from tools import apriori_gen
-import association_rules
+from association_rules import RuleMiner
 
 def one_item_sets(data_set):
     """Creates a superset containing a set for each one of the items in a
@@ -99,6 +99,11 @@ def apriori(dataset, min_support=0.5):
 
     return frequent_itemsets, support_data
 
+def generate_rules(frequent_itemsets, support_data, min_conf=0.7):
+
+    this_miner = RuleMiner(frequent_itemsets, support_data, min_conf)
+    return this_miner.generate()
+
 def run(dataset):
     """Runs the apriori algorithm for frequent itemset and asociation
     rule generation.
@@ -116,4 +121,6 @@ def run(dataset):
 
     frequent_itemsets, support_data = apriori(dataset, min_support=0.5)
 
-    return frequent_itemsets, support_data
+    rules = generate_rules(frequent_itemsets, support_data)
+
+    return frequent_itemsets, rules

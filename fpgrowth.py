@@ -1,3 +1,4 @@
+from association_rules import RuleMiner
 
 class treeNode:
     def __init__(self, nameValue, numOccur, parentNode):
@@ -92,11 +93,6 @@ def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
             mineTree(myCondTree, myHead, minSup, newFreqSet, freqItemList)
 
 def get_support(freqSet, headerTab, num_items):
-    """
-    if len(freqSet) == 1:
-        return float(headerTab[freqSet][0]) / num_items
-    else:
-    """
 
     localD = {}
     for item in freqSet:
@@ -118,51 +114,21 @@ def get_support(freqSet, headerTab, num_items):
 
     return float(this_count) / num_items
 
-def calcConf(freqSet, H, brl, headerTab, num_items, minConf):
-    prunedH = []
-    for conseq in H:
-        support_a = get_support(freqSet, headerTab, num_items)
-        support_b = get_support(freqSet - conseq, headerTab, num_items)
-        #print "itemset_a: %s\nsupport_a: %f\nitemset_b: %s\nsupport_b: %f\n" % (freqSet, support_a, freqSet - conseq, support_b)
-        conf = support_a/support_b
-        if conf >= minConf:
-            brl.append((freqSet - conseq, conseq, conf))
-            prunedH.append(conseq)
-    return prunedH
 
-def aprioriGen(Lk, k):
-    retList = []
-    lenLk = len(Lk)
-    for i in range(lenLk):
-        for j in range(i+1, lenLk):
-            L1 = list(Lk[i])[:k-2]
-            L2 = list(Lk[j])[:k-2]
-            L1.sort()
-            L2.sort()
-            if L1 == L2:
-                retList.append(Lk[i] | Lk[j])
+class RuleMinerForFP(RuleMiner):
+    def __init__(self, frequent_itemsets, support_data_struct, num_transactions, min_conf=0.7):
+        super(RuleMinerForFP, self).__init__(frequent_itemsets, support_data_struct, min_conf)
+        self.num_transactions = num_transactions
 
-    return retList
+    def get_confidence(self, antecedent, consequent):
+        support_a = get_support(antecedent, self.support_data_struct, self.num_transactions)
+        support_b = get_support(antecedent - consequent, self.support_data_struct, self.num_transactions)
+        return support_a/support_b
 
-def rulesFromConseq(freqSet, H, brl, headerTab, num_items, minConf):
-    m = len(H[0])
-    if (len(freqSet) > (m + 1)):
-        Hmp1 = aprioriGen(H, m+1)
-        Hmp1 = calcConf(freqSet, Hmp1, brl, headerTab, num_items, minConf)
-        if (len(Hmp1) > 1):
-            rulesFromConseq(freqSet, Hmp1, brl, headerTab, num_items, minConf)
+def generate_rules(frequent_itemsets, support_data_struct, num_transactions, min_conf=0.7):
 
-def generateRules(freqItems, headerTab, num_items, minConf=0.7,):
-    bigRuleList = []
-    for freqSet in freqItems:
-        if len(freqSet) >= 2:
-            H1 = [frozenset([item]) for item in freqSet]
-            if len(freqSet) == 2:
-                calcConf(freqSet, H1, bigRuleList, headerTab, num_items, minConf)
-            else:
-                rulesFromConseq(freqSet, H1, bigRuleList, headerTab, num_items, minConf)
-    return bigRuleList
-
+    this_miner = RuleMinerForFP(frequent_itemsets, support_data_struct, num_transactions, min_conf)
+    return this_miner.generate()
 
 def run(dataSet, minsup=0.5):
 
@@ -172,15 +138,9 @@ def run(dataSet, minsup=0.5):
 
     myFPTree, myHeaderTab = createTree(initSet, abs_minsup)
 
-    #myFPTree.disp()
-    #print myHeaderTab
-
     freqItems = []
     mineTree(myFPTree, myHeaderTab, abs_minsup, set([]), freqItems)
 
-    #import ipdb; ipdb.set_trace()
-    #rules = generateRules(freqItems, myHeaderTab, float(len(dataSet)))
-    #rules = generateRules(freqItems, myHeaderTab)
+    rules = generate_rules(freqItems, myHeaderTab, len(dataSet))
 
-    #return freqItems, rules
-    return freqItems, myHeaderTab
+    return freqItems, rules
