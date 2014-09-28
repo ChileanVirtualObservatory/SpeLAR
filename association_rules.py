@@ -1,18 +1,25 @@
 from tools import apriori_gen
+from fpgrowth import get_support
 
 class RuleMiner(object):
     """A class for mining asociation rules using Apriori algorithm
     """
-    def __init__(self, frequent_itemsets, support_data, min_conf=0.7):
+    def __init__(self, frequent_itemsets, support_data_struct, min_conf=0.7):
         super(RuleMiner, self).__init__()
         self.frequent_itemsets = frequent_itemsets
-        self.support_data = support_data
+        self.support_data_struct = support_data_struct
         self.min_conf = min_conf
 
     def calc_confidence(self, frequent_set, itemset_list, brl):
         pruned_item_list = []
+        num_items = 4
         for conseq in itemset_list:
-            conf = self.support_data[frequent_set]/self.support_data[frequent_set - conseq]
+            if (type(self.support_data_struct.values()[0]) is float):
+                conf = self.support_data_struct[frequent_set]/self.support_data_struct[frequent_set - conseq]
+            else:
+                support_a = get_support(frequent_set, self.support_data_struct, num_items)
+                support_b = get_support(frequent_set - conseq, self.support_data_struct, num_items)
+                conf = support_a/support_b
             if conf >= self.min_conf:
                 brl.append((frequent_set - conseq, conseq, conf))
                 pruned_item_list.append(conseq)
@@ -39,24 +46,16 @@ class RuleMiner(object):
     def generate(self):
         big_rule_list = []
         # Get only sets with two or more items
-        for i in range(1, len(self.frequent_itemsets)):
-            for frequent_set in self.frequent_itemsets[i]:
-                item_list_1 = [frozenset([item]) for item in frequent_set]
-                if i > 1:
-                    self.rules_from_consequent(
-                        frequent_set,
-                        item_list_1,
-                        big_rule_list,
-                        )
+        for frequent_itemset in self.frequent_itemsets:
+            if len(frequent_itemset) >= 2:
+                item_list_1 = [frozenset([item]) for item in frequent_itemset]
+                if len(frequent_itemset) == 2:
+                    self.calc_confidence(frequent_itemset, item_list_1, big_rule_list)
                 else:
-                    self.calc_confidence(
-                        frequent_set,
-                        item_list_1,
-                        big_rule_list,
-                        )
+                    self.rules_from_consequent(frequent_itemset, item_list_1, big_rule_list)
         return big_rule_list
 
-def generate_rules(frequent_itemsets, support_data, min_conf=0.7):
+def generate_rules(frequent_itemsets, support_data_struct, min_conf=0.7):
 
-    this_miner = RuleMiner(frequent_itemsets, support_data, min_conf)
-    return this_miner.generate()
+    this_miner = RuleMiner(frequent_itemsets, support_data_struct, min_conf)
+    return this_miner.generate()    

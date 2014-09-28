@@ -94,6 +94,9 @@ def apriori(dataset, min_support=0.5):
         support_data.update(supp_data_k)
         frequent_itemsets.append(freq_itemsets_k)
         k += 1
+
+    frequent_itemsets = [x for itemset in frequent_itemsets for x in itemset]
+
     return frequent_itemsets, support_data
 
 def run(dataset):

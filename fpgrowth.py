@@ -179,6 +179,8 @@ def run(dataSet, minsup=0.5):
     mineTree(myFPTree, myHeaderTab, abs_minsup, set([]), freqItems)
 
     #import ipdb; ipdb.set_trace()
-    rules = generateRules(freqItems, myHeaderTab, float(len(dataSet)))
+    #rules = generateRules(freqItems, myHeaderTab, float(len(dataSet)))
+    #rules = generateRules(freqItems, myHeaderTab)
 
-    return freqItems, rules
+    #return freqItems, rules
+    return freqItems, myHeaderTab
