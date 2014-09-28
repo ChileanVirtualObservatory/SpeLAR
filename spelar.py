@@ -12,9 +12,10 @@ Example:
     $ python spelar.py test.csv
 """
 
-import argparse
 import apriori
+import argparse
 import fpgrowth
+import association_rules
 
 def main():
     """Main function invoked by command line. Receives, processes parameters
@@ -29,7 +30,8 @@ def main():
 
     spectra = parse_csv(in_file)
 
-    ap_itemsets, support_data, ap_rules = apriori.run(spectra)
+    ap_itemsets, support_data = apriori.run(spectra)
+    ap_rules = association_rules.generate_rules(ap_itemsets, support_data)
 
     print "apriori_items:\n%s\n" % ap_itemsets
     print "apriori_rules:\n%s\n" % ap_rules
