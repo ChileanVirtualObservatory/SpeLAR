@@ -6,8 +6,11 @@ SpeLAR
 
 Main application is executed with the command:
 
-		python main_test.py -ap test.csv
+		python spelar.py -ap test.csv
 
+Tests are executed with the command:
+
+		python main_test.py
 
 
 -.-
