@@ -15,7 +15,7 @@ class TestMainApp(unittest.TestCase):
 
 		self.frequent_itemsets = set([
 		frozenset([84.58818]),
-		frozenset([84.03675]),
+		#frozenset([84.03675]),
 		frozenset([84.83367]),
 		frozenset([84.03675, 84.83367]),
 		frozenset([84.03675, 84.58818]),
@@ -34,6 +34,7 @@ class TestMainApp(unittest.TestCase):
 		(frozenset([84.83367]), frozenset([84.03675, 84.58818]), 1.0),
 		(frozenset([84.03675]), frozenset([84.83367, 84.58818]), 1.0)
 		])
+
 
 	def test_apriori(self):
 		this_itemsets, this_rules = apriori.run(self.spectra)
