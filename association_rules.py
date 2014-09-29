@@ -60,10 +60,3 @@ class RuleMiner(object):
                 else:
                     self.rules_from_consequent(frequent_itemset, item_list_1, big_rule_list)
         return big_rule_list
-
-"""
-def generate_rules(frequent_itemsets, support_data_struct, min_conf=0.7):
-
-    this_miner = RuleMiner(frequent_itemsets, support_data_struct, min_conf)
-    return this_miner.generate()    
-"""

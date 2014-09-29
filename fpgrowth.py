@@ -140,6 +140,7 @@ def run(dataSet, minsup=0.5):
 
     freqItems = []
     mineTree(myFPTree, myHeaderTab, abs_minsup, set([]), freqItems)
+    freqItems = map(frozenset,freqItems)
 
     rules = generate_rules(freqItems, myHeaderTab, len(dataSet))
 
