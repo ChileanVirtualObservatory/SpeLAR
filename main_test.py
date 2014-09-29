@@ -45,3 +45,6 @@ class TestMainApp(unittest.TestCase):
 		this_itemsets, this_rules = fpgrowth.run(self.spectra)
 		self.assertTrue(set(this_rules) == self.rules)
 		self.assertTrue(set(this_itemsets) == self.frequent_itemsets)
+
+if __name__ == '__main__':
+    unittest.main()

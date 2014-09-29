@@ -24,21 +24,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("in_file")
 
+    group_algorithm = parser.add_mutually_exclusive_group(required=True)
+    group_algorithm.add_argument('-ap', '--apriori', action="store_true", help="Run with Apriori algorithm for frequent itemset generation")
+    group_algorithm.add_argument('-fp', '--fpgrowth', action="store_true", help="Run with FP-Growth algorithm for frequent itemset generation")
+
     args = parser.parse_args()
 
     in_file = args.in_file
 
     spectra = parse_csv(in_file)
 
-    ap_itemsets, ap_rules = apriori.run(spectra)
+    if args.apriori:
+        itemsets, rules = apriori.run(spectra)
+    elif args.fpgrowth:
+        itemsets, rules = fpgrowth.run(spectra)
 
-    print "apriori_items:\n%s\n" % ap_itemsets
-    print "apriori_rules:\n%s\n" % ap_rules
-
-    fp_itemsets, fp_rules = fpgrowth.run(spectra)
-
-    print "fp_items:\n%s\n" % fp_itemsets
-    print "fp_rules:\n%s\n" % fp_rules
+    print "items:\n%s\n" % itemsets
+    print "rules:\n%s\n" % rules
 
 def parse_csv(in_file):
     """
