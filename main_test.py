@@ -27,10 +27,10 @@ class TestMainApp(unittest.TestCase):
 			(frozenset([84.83367]),frozenset([84.03675]), 1.0),
 			(frozenset([84.03675]), frozenset([84.83367]), 1.0),
 			(frozenset([84.58818]), frozenset([84.03675]), 1.0),
-			#(frozenset([84.03675]), frozenset([84.58818]), 1.0),
+			(frozenset([84.03675]), frozenset([84.58818]), 1.0),
 			(frozenset([84.58818]), frozenset([84.83367]), 1.0),
 			(frozenset([84.83367]), frozenset([84.58818]), 1.0),
-			(frozenset([84.58818]), frozenset([84.03675, 84.83367]), 1.0),
+			#(frozenset([84.58818]), frozenset([84.03675, 84.83367]), 1.0),
 			(frozenset([84.83367]), frozenset([84.03675, 84.58818]), 1.0),
 			(frozenset([84.03675]), frozenset([84.83367, 84.58818]), 1.0)
 		])
