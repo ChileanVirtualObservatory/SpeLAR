@@ -12,6 +12,7 @@ class TestMainApp(unittest.TestCase):
 		[84.03675, 84.58818, 84.53117, 84.83367],
 		[84.37009, 84.47945]
 		]
+
 		self.frequent_itemsets = set([
 		frozenset([84.58818]),
 		frozenset([84.03675]),
