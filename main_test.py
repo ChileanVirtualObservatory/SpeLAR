@@ -7,32 +7,32 @@ class TestMainApp(unittest.TestCase):
 
 	def setUp(self):
 		self.spectra = [
-		[84.03675, 84.58818, 84.83367],
-		[84.03675, 84.32088, 84.58818, 84.52117, 84.83367],
-		[84.03675, 84.58818, 84.53117, 84.83367],
-		[84.37009, 84.47945]
+			[84.03675, 84.58818, 84.83367],
+			[84.03675, 84.32088, 84.58818, 84.52117, 84.83367],
+			[84.03675, 84.58818, 84.53117, 84.83367],
+			[84.37009, 84.47945]
 		]
 
 		self.frequent_itemsets = set([
-		frozenset([84.58818]),
-		#frozenset([84.03675]),
-		frozenset([84.83367]),
-		frozenset([84.03675, 84.83367]),
-		frozenset([84.03675, 84.58818]),
-		frozenset([84.83367, 84.58818]),
-		frozenset([84.03675, 84.83367, 84.58818])
+			frozenset([84.58818]),
+			frozenset([84.03675]),
+			frozenset([84.83367]),
+			frozenset([84.03675, 84.83367]),
+			frozenset([84.03675, 84.58818]),
+			frozenset([84.83367, 84.58818]),
+			frozenset([84.03675, 84.83367, 84.58818])
 		])
 
 		self.rules = set([
-		(frozenset([84.83367]),frozenset([84.03675]), 1.0),
-		(frozenset([84.03675]), frozenset([84.83367]), 1.0),
-		(frozenset([84.58818]), frozenset([84.03675]), 1.0),
-		(frozenset([84.03675]), frozenset([84.58818]), 1.0),
-		(frozenset([84.58818]), frozenset([84.83367]), 1.0),
-		(frozenset([84.83367]), frozenset([84.58818]), 1.0),
-		(frozenset([84.58818]), frozenset([84.03675, 84.83367]), 1.0),
-		(frozenset([84.83367]), frozenset([84.03675, 84.58818]), 1.0),
-		(frozenset([84.03675]), frozenset([84.83367, 84.58818]), 1.0)
+			(frozenset([84.83367]),frozenset([84.03675]), 1.0),
+			(frozenset([84.03675]), frozenset([84.83367]), 1.0),
+			(frozenset([84.58818]), frozenset([84.03675]), 1.0),
+			(frozenset([84.03675]), frozenset([84.58818]), 1.0),
+			(frozenset([84.58818]), frozenset([84.83367]), 1.0),
+			(frozenset([84.83367]), frozenset([84.58818]), 1.0),
+			(frozenset([84.58818]), frozenset([84.03675, 84.83367]), 1.0),
+			(frozenset([84.83367]), frozenset([84.03675, 84.58818]), 1.0),
+			(frozenset([84.03675]), frozenset([84.83367, 84.58818]), 1.0)
 		])
 
 
