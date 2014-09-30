@@ -9,7 +9,7 @@ given spectral line data source.
 
 Example:
 
-    $ python spelar.py test.csv
+    $ python spelar.py -ap test.csv
 """
 
 import apriori
