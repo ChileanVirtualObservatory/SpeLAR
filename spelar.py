@@ -39,8 +39,11 @@ def main():
     elif args.fpgrowth:
         itemsets, rules = fpgrowth.run(spectra)
 
-    print "items:\n%s\n" % itemsets
-    print "rules:\n%s\n" % rules
+    #print "items:\n%s\n" % itemsets
+    #print "rules:\n%s\n" % rules
+
+    print "items:\n%d\n" % len(itemsets)
+    print "rules:\n%d\n" % len(rules)
 
 def parse_csv(in_file):
     """

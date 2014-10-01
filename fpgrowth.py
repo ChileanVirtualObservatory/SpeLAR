@@ -33,7 +33,8 @@ def updateTree(items, inTree, headerTable, count):
     if len(items) > 1:
         updateTree(items[1::], inTree.children[items[0]], headerTable, count)
 
-def createTree(dataSet, minSup=1):
+def createTree(dataSet, minSup):
+
     headerTable = {}
     for trans in dataSet:
         for item in trans:
@@ -42,6 +43,7 @@ def createTree(dataSet, minSup=1):
         if headerTable[k] < minSup:
             del(headerTable[k])
     freqItemSet = set(headerTable.keys())
+
     if len(freqItemSet) == 0:
         return None, None
     for k in headerTable:
@@ -49,20 +51,21 @@ def createTree(dataSet, minSup=1):
     retTree = treeNode('Null Set', 1, None)
     for tranSet, count in dataSet.items():
         localD = {}
-        #import ipdb; ipdb.set_trace()
+
         for item in tranSet:
             if item in freqItemSet:
                 localD[item] = headerTable[item][0]
         if len(localD) > 0:
-            orderedItems = [v[0] for v in sorted(localD.items(), key=lambda p: p[1], reverse=True)]
+            orderedItems = [v[0] for v in sorted(localD.items(), key=lambda p: (p[1], p[0]), reverse=True)]
             #orderedItems = [v[0] for v in sorted(localD.items(), key=lambda p: p[0], reverse=True)]
             updateTree(orderedItems, retTree, headerTable, count)
     return retTree, headerTable
 
 def createInitSet(dataSet):
+
     retDict = {}
     for trans in dataSet:
-        retDict[frozenset(trans)] = 1
+        retDict[frozenset(trans)] = retDict.get(frozenset(trans), 0) + 1
     return retDict
 
 def ascendTree(leafNode, prefixPath):
@@ -81,7 +84,10 @@ def findPrefixPath(basePat, treeNode):
     return condPats
 
 def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
-    bigL = [v[0] for v in sorted (headerTable.items(), key=lambda p: p[1])]
+    if not headerTable:
+        return
+
+    bigL = [v[0] for v in sorted (headerTable.items(), key=lambda p: (p[1],p[0]))]
 
     for basePat in bigL:
         newFreqSet = preFix.copy()
@@ -94,10 +100,12 @@ def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
 
 def get_support(freqSet, headerTab, num_items):
 
+
+
     localD = {}
     for item in freqSet:
         localD[item] = headerTab[item][0]
-    ordered_freq_set = [v[0] for v in sorted(localD.items(), key=lambda p: p[1], reverse=True)]
+    ordered_freq_set = [v[0] for v in sorted(localD.items(), key=lambda p: (p[1], p[0]), reverse=True)]
 
     last_item = ordered_freq_set[-1]
     rest = frozenset(ordered_freq_set[:-1])
@@ -130,7 +138,7 @@ def generate_rules(frequent_itemsets, support_data_struct, num_transactions, min
     this_miner = RuleMinerForFP(frequent_itemsets, support_data_struct, num_transactions, min_conf)
     return this_miner.generate()
 
-def run(dataSet, minsup=0.5):
+def run(dataSet, minsup=0.69):
 
     abs_minsup = minsup * len(dataSet)
 
@@ -139,6 +147,7 @@ def run(dataSet, minsup=0.5):
     myFPTree, myHeaderTab = createTree(initSet, abs_minsup)
 
     freqItems = []
+
     mineTree(myFPTree, myHeaderTab, abs_minsup, set([]), freqItems)
     freqItems = map(frozenset,freqItems)
 
