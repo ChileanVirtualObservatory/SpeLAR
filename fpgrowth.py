@@ -100,8 +100,6 @@ def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
 
 def get_support(freqSet, headerTab, num_items):
 
-
-
     localD = {}
     for item in freqSet:
         localD[item] = headerTab[item][0]
@@ -124,23 +122,26 @@ def get_support(freqSet, headerTab, num_items):
 
 
 class RuleMinerForFP(RuleMiner):
-    def __init__(self, frequent_itemsets, support_data_struct, num_transactions, min_conf=0.7):
+    def __init__(self, frequent_itemsets, support_data_struct, num_transactions, min_conf):
         super(RuleMinerForFP, self).__init__(frequent_itemsets, support_data_struct, min_conf)
         self.num_transactions = num_transactions
+
+    def get_support(self, this_set):
+        return get_support(this_set, self.support_data_struct, self.num_transactions)
 
     def get_confidence(self, antecedent, consequent):
         support_a = get_support(antecedent, self.support_data_struct, self.num_transactions)
         support_b = get_support(antecedent - consequent, self.support_data_struct, self.num_transactions)
         return support_a/support_b
 
-def generate_rules(frequent_itemsets, support_data_struct, num_transactions, min_conf=0.7):
+def generate_rules(frequent_itemsets, support_data_struct, num_transactions, min_conf):
 
     this_miner = RuleMinerForFP(frequent_itemsets, support_data_struct, num_transactions, min_conf)
     return this_miner.generate()
 
-def run(dataSet, minsup=0.69):
+def run(dataSet, min_support, min_conf):
 
-    abs_minsup = minsup * len(dataSet)
+    abs_minsup = min_support * len(dataSet)
 
     initSet = createInitSet(dataSet)
 
@@ -151,6 +152,6 @@ def run(dataSet, minsup=0.69):
     mineTree(myFPTree, myHeaderTab, abs_minsup, set([]), freqItems)
     freqItems = map(frozenset,freqItems)
 
-    rules = generate_rules(freqItems, myHeaderTab, len(dataSet))
+    rules = generate_rules(freqItems, myHeaderTab, len(dataSet), min_conf)
 
     return freqItems, rules

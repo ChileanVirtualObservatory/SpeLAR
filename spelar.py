@@ -16,13 +16,17 @@ import apriori
 import argparse
 import fpgrowth
 import association_rules
+import csv
 
 def main():
     """Main function invoked by command line. Receives, processes parameters
     and calls respective algorithms.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("in_file")
+    parser.add_argument("in_file", help="CSV input file")
+    parser.add_argument("min_sup", help="Minimum support", type=float)
+    parser.add_argument("min_conf", help="Minimum confidence", type=float)
+    parser.add_argument('-d', '--descriptions', help="CSV with item IDs and descriptions to display")
 
     group_algorithm = parser.add_mutually_exclusive_group(required=True)
     group_algorithm.add_argument('-ap', '--apriori', action="store_true", help="Run with Apriori algorithm for frequent itemset generation")
@@ -35,15 +39,26 @@ def main():
     spectra = parse_csv(in_file)
 
     if args.apriori:
-        itemsets, rules = apriori.run(spectra)
+        itemsets, rules = apriori.run(spectra, args.min_sup, args.min_conf)
     elif args.fpgrowth:
-        itemsets, rules = fpgrowth.run(spectra)
+        itemsets, rules = fpgrowth.run(spectra, args.min_sup, args.min_conf)
 
     #print "items:\n%s\n" % itemsets
-    #print "rules:\n%s\n" % rules
 
-    print "items:\n%d\n" % len(itemsets)
-    print "rules:\n%d\n" % len(rules)
+    if args.descriptions:
+        ids_descriptions = dict()
+        with open(args.descriptions, 'r') as descr_file:
+            reader = csv.reader(descr_file)
+            next(reader, None)
+            for row in reader:
+                ids_descriptions[row[1]] = row[0]
+        association_rules.add_descriptions(rules, ids_descriptions)
+        
+    for rule in rules:
+        print rule
+
+    #print "items:\n%d\n" % len(itemsets)
+    #print "rules:\n%d\n" % len(rules)
 
 def parse_csv(in_file):
     """
@@ -55,7 +70,7 @@ def parse_csv(in_file):
     with open(in_file) as this_file:
         content = this_file.readlines()
 
-    return [map(float, x.rstrip('\n').split(',')) for x in content]
+    return [map(int, x.rstrip('\n').split(',')) for x in content]
 
     #return [[1, 3, 4], [2, 3, 5], [1, 2, 3, 5], [2, 5]]
 

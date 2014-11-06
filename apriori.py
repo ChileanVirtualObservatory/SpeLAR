@@ -63,7 +63,7 @@ def scan_data(dataset, candidate_sets, min_support):
         support_data[key] = support
     return ret_list, support_data
 
-def apriori(dataset, min_support=0.5):
+def apriori(dataset, min_support):
     """
     Args:
         dataset (iterable (iterable)): a dataset of transactions
@@ -99,12 +99,12 @@ def apriori(dataset, min_support=0.5):
 
     return frequent_itemsets, support_data
 
-def generate_rules(frequent_itemsets, support_data, min_conf=0.7):
+def generate_rules(frequent_itemsets, support_data, min_conf):
 
     this_miner = RuleMiner(frequent_itemsets, support_data, min_conf)
     return this_miner.generate()
 
-def run(dataset):
+def run(dataset, min_support, min_conf):
     """Runs the apriori algorithm for frequent itemset and asociation
     rule generation.
 
@@ -119,8 +119,8 @@ def run(dataset):
         rules: a set of association rules mined from the dataset
     """
 
-    frequent_itemsets, support_data = apriori(dataset, min_support=0.5)
+    frequent_itemsets, support_data = apriori(dataset, min_support)
 
-    rules = generate_rules(frequent_itemsets, support_data)
+    rules = generate_rules(frequent_itemsets, support_data, min_conf)
 
     return frequent_itemsets, rules
