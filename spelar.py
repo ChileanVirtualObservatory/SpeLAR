@@ -27,6 +27,7 @@ def main():
     parser.add_argument("min_sup", help="Minimum support", type=float)
     parser.add_argument("min_conf", help="Minimum confidence", type=float)
     parser.add_argument('-d', '--descriptions', help="CSV with item IDs and descriptions to display")
+    parser.add_argument('-tex', '--latex', help="Output table with association rules in LaTeX format")
 
     group_algorithm = parser.add_mutually_exclusive_group(required=True)
     group_algorithm.add_argument('-ap', '--apriori', action="store_true", help="Run with Apriori algorithm for frequent itemset generation")
@@ -43,7 +44,18 @@ def main():
     elif args.fpgrowth:
         itemsets, rules = fpgrowth.run(spectra, args.min_sup, args.min_conf)
 
+    num_rules = len(rules)
+    num_itemsets = len(itemsets)
+
     #print "items:\n%s\n" % itemsets
+
+    #rules = sorted(rules, key=lambda x: x.support(), reverse=True)
+    #rules = sorted(rules, key=lambda x: x.confidence(), reverse=True)
+    rules = sorted(rules, key=lambda x: x.lift(), reverse=True)
+
+    max_rules = 250
+    if len(rules) > max_rules:
+        rules = rules[:max_rules]
 
     if args.descriptions:
         ids_descriptions = dict()
@@ -53,12 +65,24 @@ def main():
             for row in reader:
                 ids_descriptions[row[1]] = row[0]
         association_rules.add_descriptions(rules, ids_descriptions)
-        
-    for rule in rules:
-        print rule
+    
+    if args.latex:
+        with open(args.latex, 'w') as latex_file:
+            latex_file.write("\\begin{longtable}{| c | l | c | c | c |}\n")
+            latex_file.write("\\hline\n")
+            latex_file.write("\\textbf{N} & \\textbf{Rule} & \\textbf{Support} & \\textbf{Confidence} & \\textbf{Lift} \\\ \\hline\n")
+            for index, rule in enumerate(rules):
+                latex_file.write(
+                    "%d & $\\begin{array}{c c c}\\left\\{\\begin{array}{c}%s\\end{array}\\right\\} & \\Rightarrow & \\left\\{\\begin{array}{c}%s\\end{array}\\right\\}\\end{array}$ & %.2f & %.2f & %.2f \\\ \\hline\n" % (index+1, rule.get_antec_descr_tex().replace("_", "\_"), rule.get_conseq_descr_tex().replace("_", "\_"), rule.support(), rule.confidence(), rule.lift())
+                    )
+            latex_file.write("\\end{longtable}")
 
-    #print "items:\n%d\n" % len(itemsets)
-    #print "rules:\n%d\n" % len(rules)
+    else:
+        for rule in rules:
+            print rule
+
+    print "\n\nNumber of frequent itemsets: %d" % num_itemsets
+    print "Number of rules: %d\n" % num_rules
 
 def parse_csv(in_file):
     """

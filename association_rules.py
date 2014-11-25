@@ -13,23 +13,53 @@ def format_description(description):
 
 class AssociationRule(object):
 
-    def __init__(self, antecedent, consequent, support, confidence):
+    def __init__(self, antecedent, consequent, support, supp_antecedent, supp_consequent):
         super(AssociationRule, self).__init__()
         self.antecedent = frozenset(antecedent)
         self.consequent = frozenset(consequent)
-        self.support = support
-        self.confidence = confidence
+        self.supp = support
+        self.supp_antecedent = supp_antecedent
+        self.supp_consequent = supp_consequent
         self.descriptions = None
 
     def __hash__(self):
-        return hash(hash(self.antecedent) + hash(self.consequent) + self.support + self.confidence)
+        return hash(hash(self.antecedent) + hash(self.consequent) + self.supp + self.supp_antecedent + self.supp_consequent)
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) \
             and self.antecedent == other.antecedent \
             and self.consequent == other.consequent \
-            and self.support == other.support \
-            and self.confidence == other.confidence
+            and self.supp == other.supp \
+            and self.supp_antecedent == other.supp_consequent \
+            and self.supp_consequent == other.supp_consequent
+
+    def support(self):
+        return self.supp
+
+    def confidence(self):
+        return self.supp / self.supp_antecedent
+
+    def lift(self):
+        return self.supp / (self.supp_antecedent * self.supp_consequent)
+
+    def get_itemsets_desctiptions(self):
+        antecedent = []
+        consequent = []
+        for item in self.antecedent:
+            if self.descriptions:
+                this_description = self.descriptions.get(str(item), "")
+            else:
+                this_description = ""
+            this_tuple = (item, this_description)
+            antecedent.append(this_tuple)
+        for item in self.consequent:
+            if self.descriptions:
+                this_description = self.descriptions.get(str(item), "")
+            else:
+                this_description = ""
+            this_tuple = (item, this_description)
+            consequent.append(this_tuple)
+        return antecedent, consequent
 
     def format_itemset(self, itemset):
         items_repr = []
@@ -41,14 +71,30 @@ class AssociationRule(object):
             items_repr.append(this_repr)
         return ", ".join(items_repr)
 
+    def format_itemset_tex(self, itemset):
+        items_repr = []
+        for item in sorted(list(itemset)):
+            if self.descriptions:
+                this_repr = "%s%s" % (item, format_description(self.descriptions.get(str(item))))
+            else:
+                this_repr = item.__str__()
+            items_repr.append(this_repr)
+        return " \\\ ".join(items_repr)
+
     def get_antec_descr(self):
         return self.format_itemset(self.antecedent)
+
+    def get_antec_descr_tex(self):
+        return self.format_itemset_tex(self.antecedent)
 
     def get_conseq_descr(self):
         return self.format_itemset(self.consequent)
 
+    def get_conseq_descr_tex(self):
+        return self.format_itemset_tex(self.consequent)
+
     def __str__(self):
-        return "<%s => %s | sup: %.2f | conf: %.2f>" % (self.get_antec_descr(), self.get_conseq_descr(), self.support, self.confidence)
+        return "<%s => %s | sup: %.2f | conf: %.2f>" % (self.get_antec_descr(), self.get_conseq_descr(), self.support(), self.confidence())
 
 class RuleMiner(object):
     """A class for mining asociation rules using Apriori algorithm
@@ -62,27 +108,16 @@ class RuleMiner(object):
     def get_support(self, this_set):
         return self.support_data_struct[this_set]
 
-    def get_confidence(self, antecedent, consequent):
-        return self.support_data_struct[antecedent]/self.support_data_struct[antecedent - consequent]
-
     def calc_confidence(self, frequent_set, itemset_list, brl):
         pruned_item_list = []
         num_items = 4
+
         for conseq in itemset_list:
-            """
-            if (type(self.support_data_struct.values()[0]) is float):
-                conf = self.support_data_struct[frequent_set]/self.support_data_struct[frequent_set - conseq]
-            else:
-                support_a = get_support(frequent_set, self.support_data_struct, num_items)
-                support_b = get_support(frequent_set - conseq, self.support_data_struct, num_items)
-                conf = support_a/support_b
-            """
-            conf = self.get_confidence(frequent_set, conseq)
-            if conf >= self.min_conf:
-                #brl.append((frequent_set - conseq, conseq, conf))
-                this_rule = AssociationRule(frequent_set - conseq, conseq, self.get_support(frequent_set), conf)
+            this_rule = AssociationRule(frequent_set - conseq, conseq, self.get_support(frequent_set), self.get_support(frequent_set - conseq), self.get_support(conseq))
+            if this_rule.confidence() >= self.min_conf:
                 brl.append(this_rule)
                 pruned_item_list.append(conseq)
+
         return pruned_item_list
 
     def rules_from_consequent(self, frequent_set, itemset_list, brl):

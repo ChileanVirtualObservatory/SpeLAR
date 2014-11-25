@@ -4,10 +4,12 @@ from bisect import bisect_left
 
 NEW_LINES = 0
 ID_LINES = 0
+ids_dict = dict()
 
 def identify_line(calc_rest_wave, wave_err, line_ids):
 	global NEW_LINES
-	global ID_LINES
+	global ID_LINES 
+	global ids_dict
 
 	if wave_err < 1:
 		wave_err = 1
@@ -31,6 +33,7 @@ def identify_line(calc_rest_wave, wave_err, line_ids):
 	if abs(calc_rest_wave - ret_val) <= wave_err:
 
 		ID_LINES += 1
+		ids_dict[ret_val] = ids_dict.get(ret_val, 0) + 1
 
 		return ret_val
 	else:
@@ -38,6 +41,9 @@ def identify_line(calc_rest_wave, wave_err, line_ids):
 		NEW_LINES += 1
 
 		new_id = int(round(calc_rest_wave))
+
+		ids_dict[new_id] = ids_dict.get(new_id, 0) + 1
+
 		line_ids.insert(pos, new_id)
 		return new_id
 
@@ -49,7 +55,7 @@ def main():
 
 	with open(lines_id_in_path, 'r') as lines_id_in_file:
 
-		line_ids = 	[]
+		line_ids = []
 
 		csv_reader = csv.DictReader(lines_id_in_file)
 		for row in csv_reader:
@@ -87,6 +93,10 @@ def main():
 				#	break
 			
 	print "\nNumber of IDs: %d\nNew IDs: %d\nIdentified existing: %d\n" % (len(line_ids), NEW_LINES, ID_LINES)
+	w = csv.writer(open("data/line_ids_new.csv", "w"))
+	sorted_ids_dict = sorted(ids_dict.items(), key=lambda x: x[1], reverse=True)
+	for key, val in sorted_ids_dict:
+	    w.writerow([key, val])
 
 if __name__ == '__main__':
     main()

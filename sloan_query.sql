@@ -497,8 +497,6 @@ WHERE
 --- Final star lines
 SELECT
   SpecObj.specObjID,
-  SpecObj.z AS specObjZ,
-  SpecObj.zErr AS specObjZErr,
   SpecObj.zStatus,
   SpecObj.objTypeName,
   SpecObj.specClass,
@@ -522,6 +520,113 @@ SELECT
   (SpecLineAll.wave / (1 + SpecObj.z)) AS calcRestWave,
   ABS((SpecLineAll.wave / (1 + SpecObj.z)) - SpecLineAll.restWave) AS calcRestWaveAcc
 INTO SpecObjStarLines
+FROM SpecObj
+  JOIN SpecLineAll
+  ON SpecObj.SpecObjID = SpecLineAll.specobjID
+WHERE
+  (SpecObj.specClass = 6 OR SpecObj.specClass = 1) AND
+  SpecObj.z < 0.002 AND
+  ABS(SpecLineAll.ew) / NULLIF(SpecLineAll.ewErr, 0) > 5
+
+
+
+SELECT TOP 3000000
+  SpecObj.specObjID,
+  SpecObj.zStatus,
+  SpecObj.objTypeName,
+  SpecObj.specClass,
+  SpecObj.mag_0,
+  SpecObj.mag_1,
+  SpecObj.mag_2,
+  SpecLineAll.SpecLineID as specLineID,
+  SpecLineAll.wave,
+  SpecLineAll.waveErr,
+  SpecLineAll.restWave,
+  SpecLineAll.lineID,
+  SpecLineAll.category,
+  SpecLineAll.height,
+  SpecLineAll.heightErr,
+  SpecLineAll.ew,
+  SpecLineAll.ewErr,
+  SpecLineAll.z AS specLineZ,
+  SpecLineAll.zErr AS specLineZErr,
+  SpecObj.z AS specObjZ,
+  SpecObj.zErr AS specObjZErr,
+  (SpecLineAll.wave / (1 + SpecObj.z)) AS calcRestWave,
+  ABS((SpecLineAll.wave / (1 + SpecObj.z)) - SpecLineAll.restWave) AS calcRestWaveAcc,
+  ABS(SpecLineAll.ew) / NULLIF(SpecLineAll.ewErr, 0) AS sNR
+INTO SpecObjStarLinesSample
+FROM SpecObj
+  JOIN SpecLineAll
+  ON SpecObj.SpecObjID = SpecLineAll.specobjID
+WHERE
+  (SpecObj.specClass = 6 OR SpecObj.specClass = 1)
+
+
+SELECT
+  SpecObj.specObjID,
+  SpecObj.zStatus,
+  SpecObj.objTypeName,
+  SpecObj.specClass,
+  SpecObj.mag_0,
+  SpecObj.mag_1,
+  SpecObj.mag_2,
+  AVG(SpecLineAll.waveErr) as avg_waveErr,
+  AVG(SpecLineAll.heightErr) as avg_heightErr,
+  SUM(CASE WHEN SpecLineAll.ew > 0 THEN 1 ELSE 0 END) AS num_em_lines,
+  SUM(CASE WHEN SpecLineAll.ew < 0 THEN 1 ELSE 0 END) AS num_abs_lines,
+  AVG(SpecLineAll.ewErr) AS avg_ewErr,
+  AVG(SpecLineAll.zErr) AS avg_specLineZErr,
+  SpecObj.z AS specObjZ,
+  SpecObj.zErr AS specObjZErr,
+  AVG(ABS((SpecLineAll.wave / (1 + SpecObj.z)) - SpecLineAll.restWave)) AS avg_calcRestWaveAcc,
+  AVG(ABS(SpecLineAll.ew) / NULLIF(SpecLineAll.ewErr, 0)) AS avg_sNR
+INTO TypeLinesSpecObjStarCloseSharp
+FROM SpecObj
+  JOIN SpecLineAll
+  ON SpecObj.SpecObjID = SpecLineAll.specobjID
+WHERE
+  (SpecObj.specClass = 6 OR SpecObj.specClass = 1) AND
+  SpecObj.z < 0.002 AND
+  ABS(SpecLineAll.ew) / NULLIF(SpecLineAll.ewErr, 0) > 5
+GROUP BY
+  SpecObj.specObjID,
+  SpecObj.zStatus,
+  SpecObj.objTypeName,
+  SpecObj.specClass,
+  SpecObj.mag_0,
+  SpecObj.mag_1,
+  SpecObj.mag_2,
+  SpecObj.z AS specObjZ,
+  SpecObj.zErr AS specObjZErr
+
+
+SELECT
+  SpecObj.specObjID,
+  SpecObj.zStatus,
+  SpecObj.objTypeName,
+  SpecObj.specClass,
+  SpecObj.mag_0,
+  SpecObj.mag_1,
+  SpecObj.mag_2,
+  SpecLineAll.SpecLineID as specLineID,
+  SpecLineAll.wave,
+  SpecLineAll.waveErr,
+  SpecLineAll.restWave,
+  SpecLineAll.lineID,
+  SpecLineAll.category,
+  SpecLineAll.height,
+  SpecLineAll.heightErr,
+  SpecLineAll.ew,
+  SpecLineAll.ewErr,
+  SpecLineAll.z AS specLineZ,
+  SpecLineAll.zErr AS specLineZErr,
+  SpecObj.z AS specObjZ,
+  SpecObj.zErr AS specObjZErr,
+  (SpecLineAll.wave / (1 + SpecObj.z)) AS calcRestWave,
+  ABS((SpecLineAll.wave / (1 + SpecObj.z)) - SpecLineAll.restWave) AS calcRestWaveAcc,
+  ABS(SpecLineAll.ew) / NULLIF(SpecLineAll.ewErr, 0) AS sNR
+INTO SpecObjStarLinesCloseSharp
 FROM SpecObj
   JOIN SpecLineAll
   ON SpecObj.SpecObjID = SpecLineAll.specobjID

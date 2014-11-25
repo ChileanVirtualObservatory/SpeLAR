@@ -129,10 +129,10 @@ class RuleMinerForFP(RuleMiner):
     def get_support(self, this_set):
         return get_support(this_set, self.support_data_struct, self.num_transactions)
 
-    def get_confidence(self, antecedent, consequent):
-        support_a = get_support(antecedent, self.support_data_struct, self.num_transactions)
-        support_b = get_support(antecedent - consequent, self.support_data_struct, self.num_transactions)
-        return support_a/support_b
+    #def get_confidence(self, antecedent, consequent):
+    #    support_a = get_support(antecedent, self.support_data_struct, self.num_transactions)
+    #    support_b = get_support(antecedent - consequent, self.support_data_struct, self.num_transactions)
+    #    return support_a/support_b
 
 def generate_rules(frequent_itemsets, support_data_struct, num_transactions, min_conf):
 
