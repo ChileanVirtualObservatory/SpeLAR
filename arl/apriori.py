@@ -119,7 +119,9 @@ def run(dataset, min_support, min_conf):
         rules: a set of association rules mined from the dataset
     """
 
-    frequent_itemsets, support_data = apriori(dataset, min_support)
+    flat_dataset = [trans['itemlist'] for trans in dataset]
+
+    frequent_itemsets, support_data = apriori(flat_dataset, min_support)
 
     rules = generate_rules(frequent_itemsets, support_data, min_conf)
 

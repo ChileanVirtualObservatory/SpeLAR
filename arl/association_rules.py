@@ -9,11 +9,11 @@ def format_description(description):
     if description:
         return ' (' + description + ')'
     else:
-        return ''
+        return ' (UNIDENTIFIED)'
 
 class AssociationRule(object):
 
-    def __init__(self, antecedent, consequent, support, supp_antecedent, supp_consequent):
+    def __init__(self, antecedent, consequent, support, supp_antecedent, supp_consequent, meta_data=None):
         super(AssociationRule, self).__init__()
         self.antecedent = frozenset(antecedent)
         self.consequent = frozenset(consequent)
@@ -21,6 +21,7 @@ class AssociationRule(object):
         self.supp_antecedent = supp_antecedent
         self.supp_consequent = supp_consequent
         self.descriptions = None
+        self.meta_data = meta_data
 
     def __hash__(self):
         return hash(hash(self.antecedent) + hash(self.consequent) + self.supp + self.supp_antecedent + self.supp_consequent)
@@ -94,7 +95,7 @@ class AssociationRule(object):
         return self.format_itemset_tex(self.consequent)
 
     def __str__(self):
-        return "<%s => %s | sup: %.2f | conf: %.2f>" % (self.get_antec_descr(), self.get_conseq_descr(), self.support(), self.confidence())
+        return "<%s => %s | sup: %.2f | conf: %.2f | meta: %s>" % (self.get_antec_descr(), self.get_conseq_descr(), self.support(), self.confidence(), self.meta_data)
 
 class RuleMiner(object):
     """A class for mining asociation rules using Apriori algorithm
